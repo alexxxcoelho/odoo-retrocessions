@@ -33,7 +33,6 @@ class RetrocessionReportController(http.Controller):
                 browser = p.chromium.launch(
                     headless=True,
                     args=["--no-sandbox"],
-                    executable_path="/usr/bin/chromium"  # Ajuste si le binaire est ailleurs
                 )
                 context = browser.new_context()
                 page = context.new_page()

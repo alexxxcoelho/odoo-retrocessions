@@ -35,6 +35,7 @@ RUN apt-get update && apt-get install -y \
     libnspr4 \
     libu2f-udev \
     wget \
+    chromium \
     --no-install-recommends && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
