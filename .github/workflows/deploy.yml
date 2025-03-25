@@ -1,0 +1,36 @@
+name: 🚀 Deploy Retrocession Module
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Pull from GitHub to Server
+        uses: appleboy/ssh-action@master
+        with:
+          host: "sat.vapeshop.ch"
+          username: "root"
+          key: ${{ secrets.SSH_PRIV_KEY }}
+          script: |
+            echo "📁 Cloning latest repo..."
+            cd /home/docker/odoo/git/odoo-retrocessions
+            git pull origin main || { echo "❌ Git pull failed"; exit 1; }
+
+            echo "🧹 Cleaning old module..."
+            rm -rf /home/docker/odoo/addons/retrocession_module
+
+            echo "📦 Copying new module..."
+            cp -r retrocession_module /home/docker/odoo/addons/
+
+            echo "📡 Updating Odoo module..."
+            docker exec -i odoo odoo -u retrocession_module -d odoo --stop-after-init
+
+            echo "♻️ Restarting Odoo container..."
+            docker restart odoo
+
+            echo "✅ Deployment completed successfully."

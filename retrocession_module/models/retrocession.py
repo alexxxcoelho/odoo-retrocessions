@@ -159,7 +159,7 @@ class RetrocessionImport(models.Model):
     def action_open_pdf(self):
         if not self.id:
             raise UserError(_("Veuillez d'abord enregistrer l'import avant d'ouvrir en HTML."))
-        url = f'/odoo/retrocession/reportpdf/{self.id}'
+        url = f'/odoo/retrocession/pdf/{self.id}'
         _logger.info(f"Opening PDF report for ID {self.id} at URL: {url}")
         return {
             'type': 'ir.actions.act_url',
