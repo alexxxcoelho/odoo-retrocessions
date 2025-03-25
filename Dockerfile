@@ -1,8 +1,9 @@
 FROM odoo:18
 
+# Reste root tout le long
 USER root
 
-# 1. Installer toutes les dépendances système nécessaires
+# Dépendances système + pip
 RUN apt-get update && apt-get install -y \
     python3-pip \
     default-jre-headless \
@@ -19,7 +20,6 @@ RUN apt-get update && apt-get install -y \
     libatspi2.0-0 \
     libnss3 \
     libxss1 \
-    libasound2t64 \
     libgtk-3-0 \
     libdrm2 \
     libxshmfence1 \
@@ -38,14 +38,8 @@ RUN apt-get update && apt-get install -y \
     --no-install-recommends && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 2. Installer les dépendances Python
+# Install Python packages
 RUN pip3 install --break-system-packages pandas jingtrang playwright
 
-# 3. Télécharger les navigateurs Playwright en tant que root
-RUN playwright install
-
-# (Optionnel) alias jingtrang
-RUN ln -sf /usr/local/bin/jingtrang /usr/local/bin/pyjing
-
-# 4. Revenir à l’utilisateur odoo
-USER odoo
+# Install Playwright dependencies and browsers
+RUN playwright install --with-deps

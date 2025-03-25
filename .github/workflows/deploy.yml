@@ -10,16 +10,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 📥 Pull from GitHub to Server
+      - name: 📥 Pull from GitHub & Rebuild Docker
         uses: appleboy/ssh-action@master
         with:
           host: "sat.vapeshop.ch"
           username: "root"
           key: ${{ secrets.SSH_PRIV_KEY }}
           script: |
-            echo "📁 Cloning latest repo..."
+            echo "📁 Pulling latest repo..."
             cd /home/docker/odoo/git/odoo-retrocessions
             git pull origin main || { echo "❌ Git pull failed"; exit 1; }
+
+            echo "🔧 Building latest Docker image..."
+            docker build -t byterrr/odoo-custom:18.0 .
+
+            echo "☁️ Pushing image to DockerHub..."
+            docker push byterrr/odoo-custom:18.0
 
             echo "🧹 Cleaning old module..."
             rm -rf /home/docker/odoo/addons/retrocession_module
@@ -34,3 +40,7 @@ jobs:
             docker restart odoo
 
             echo "✅ Deployment completed successfully."
+
+      - name: 🛰️ Trigger Portainer Webhook
+        run: |
+          curl -X POST "${{ secrets.PORTAINER_WEBHOOK_URL }}"
