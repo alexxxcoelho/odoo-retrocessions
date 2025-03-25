@@ -173,6 +173,7 @@ class Partner(models.Model):
     _inherit = 'res.partner'
 
     x_comission_rate = fields.Float(string="Taux de commission (%)")
+    x_iban = fields.Char(string="IBAN de reversement")
     import_ids = fields.One2many('retrocession.import', 'partner_id', string="Rétrocessions")
     retrocession_ids = fields.One2many(
         'retrocession.import', 
