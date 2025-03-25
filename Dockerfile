@@ -43,3 +43,4 @@ RUN pip3 install --break-system-packages pandas jingtrang playwright
 
 # Install Playwright dependencies and browsers
 RUN playwright install --with-deps
+USER odoo
