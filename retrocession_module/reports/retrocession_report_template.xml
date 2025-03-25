@@ -48,9 +48,6 @@
           font-size: 14px;
           width: 40%;
         }
-        .summary-box {
-          border: 1px solid #ccc;
-        }
         .client-box {
           text-align: right;
         }
@@ -103,17 +100,26 @@
 
           <div class="summary-section">
             <div class="summary-box">
-              <table style="margin: 0px">
-                <tr><td style="border: none;"><strong>Période</strong></td><td style="border: none;"><t t-esc="doc.date_start"/> → <t t-esc="doc.date_end"/></td></tr>
-                <tr><td style="border: none;"><strong>Machine(s)</strong></td><td style="border: none;"><t t-esc="', '.join(set([l.machine_number for l in doc.line_ids]))"/></td></tr>
-                <tr><td style="border: none;"><strong>Commission Totale</strong></td><td style="border: none;"><t t-esc="'%.2f' % doc.total_commission"/> CHF</td></tr>
+              <table style="margin-left: 10px; margin: 0px; border: 1px solid #ccc">
+                <tr><td style="border: none; padding-left: 10px"><strong>Période</strong></td><td style="border: none;"><t t-esc="doc.date_start"/> → <t t-esc="doc.date_end"/></td></tr>
+                <tr><td style="border: none; padding-left: 10px"><strong>Machine(s)</strong></td><td style="border: none;"><t t-esc="', '.join(set([l.machine_number for l in doc.line_ids]))"/></td></tr>
+                <tr><td style="border: none; padding-left: 10px"><strong>Commission Totale</strong></td><td style="border: none;"><t t-esc="'%.2f' % doc.total_commission"/> CHF</td></tr>
               </table>
             </div>
             <div class="client-box">
               <t t-esc="doc.partner_id.name"/><br/>
-              <t t-if="doc.partner_id.street" t-esc="doc.partner_id.street"/><br t-if="doc.partner_id.street"/>
-              <t t-if="doc.partner_id.city" t-esc="doc.partner_id.city"/>
-              <t t-if="doc.partner_id.country_id" t-esc="doc.partner_id.country_id.name"/>
+              <t t-if="doc.partner_id.street">
+                <t t-esc="doc.partner_id.street"/><br/>
+              </t>
+              <t t-if="doc.partner_id.street2">
+                <t t-esc="doc.partner_id.street2"/><br/>
+              </t>
+              <t t-if="doc.partner_id.zip or doc.partner_id.city">
+                <t t-esc="(doc.partner_id.zip or '') + ' ' + (doc.partner_id.city or '')"/><br/>
+              </t>
+              <t t-if="doc.partner_id.country_id">
+                <t t-esc="doc.partner_id.country_id.name"/>
+              </t>
             </div>
           </div><br/><br/>
 

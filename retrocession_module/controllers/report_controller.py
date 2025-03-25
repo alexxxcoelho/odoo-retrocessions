@@ -4,7 +4,8 @@ import subprocess
 import tempfile
 import os
 import requests
-
+import base64
+from datetime import datetime
 
 import logging
 _logger = logging.getLogger(__name__)
@@ -42,14 +43,42 @@ class RetrocessionReportController(http.Controller):
 
         response = requests.get(url, params=params)
 
-        if response.status_code == 200:
-            # Optionnel : return PDF direct au navigateur
-            return request.make_response(
-                response.content,
-                headers=[
-                    ('Content-Type', 'application/pdf'),
-                    ('Content-Disposition', f'attachment; filename=retrocession_{report_id}.pdf')
-                ]
-            )
-        else:
+        if response.status_code != 200:
             return f"❌ Erreur PDF: {response.status_code} - {response.text}"
+
+        # Nom du fichier
+        filename = f"retrocession_{report_id}.pdf"
+
+        # Récupérer le modèle de rétrocession
+        retro = request.env['retrocession.import'].browse(report_id)
+        partner = retro.partner_id  # ou lier à ton contact selon ton modèle
+
+        # Créer une pièce jointe
+        attachment = request.env['ir.attachment'].sudo().create({
+            'name': filename,
+            'datas': base64.b64encode(response.content),
+            'res_model': 'res.partner',
+            'res_id': partner.id,
+            'type': 'binary',
+            'mimetype': 'application/pdf',
+        })
+
+        # Sujet du message
+        now = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        subject = f"{retro.name or filename} – PDF généré le {now}"
+
+        # Envoyer un message dans le chatter du contact
+        partner.message_post(
+            body="📄 Le PDF de rétrocession a été généré automatiquement.",
+            subject=subject,
+            attachment_ids=[attachment.id]
+        )
+
+        # Retourner directement le PDF au navigateur
+        return request.make_response(
+            response.content,
+            headers=[
+                ('Content-Type', 'application/pdf'),
+                ('Content-Disposition', f'attachment; filename="{filename}"')
+            ]
+        )
