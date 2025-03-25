@@ -18,3 +18,7 @@
 docker build -t odoo-custom .
 docker tag odoo-custom byterrr/odoo-custom:18.0
 docker push byterrr/odoo-custom:18.0
+
+
+docker exec -it odoo bash -lc "odoo -u retrocession_module -d odoo --stop-after-init"
+docker restart odoo
