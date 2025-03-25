@@ -3,6 +3,8 @@ from datetime import datetime
 import pandas as pd
 import base64
 import io
+import logging
+_logger = logging.getLogger(__name__)
 
 class RetrocessionLine(models.Model):
     _name = 'retrocession.line'
@@ -22,16 +24,22 @@ class RetrocessionImport(models.Model):
     _name = 'retrocession.import'
     _description = 'Import rétrocessions'
 
-    name = fields.Char(default="Import rétrocession")
+    name = fields.Char(string="Import rétrocession", compute="_compute_name", store=True)
     import_file = fields.Binary(string="Fichier Excel")
     filename = fields.Char(string="Nom du fichier")
     partner_id = fields.Many2one('res.partner', string="Client")
     distributor_id = fields.Many2one('res.partner', string="Distributeur")
     x_comission_rate = fields.Float(
         string="Taux de commission",
-        related="partner_id.x_comission_rate",
+        related="distributor_id.x_comission_rate",
         readonly=True,
     )
+    x_iban = fields.Char(
+        string="IBAN de reversement des commissions",
+        related="partner_id.x_iban",
+        readonly=True,
+    )
+
     line_ids = fields.One2many('retrocession.line', 'retrocession_id', string="Lignes")
     date_start = fields.Date(string="Date de début", readonly=True)
     date_end = fields.Date(string="Date de fin", readonly=True)
@@ -40,10 +48,25 @@ class RetrocessionImport(models.Model):
     total_ttc = fields.Float(string="Total TTC", readonly=True)
     confirmed = fields.Boolean(string="Confirmé", default=False)
 
+    @api.depends('partner_id', 'distributor_id')
+    def _compute_name(self):
+        for rec in self:
+            name_parts = [f"#{rec.id}" if rec.id else "#"]
+            if rec.partner_id:
+                name_parts.append(rec.partner_id.name)
+            if rec.distributor_id:
+                name_parts.append(rec.distributor_id.name)
+            rec.name = " – ".join(name_parts)
+
     @api.depends('distributor_id')
     def _compute_x_comission_rate(self):
         for rec in self:
             rec.x_comission_rate = rec.distributor_id.x_comission_rate or 0.0
+
+    @api.depends('partner_id')
+    def _compute_x_comission_rate(self):
+        for rec in self:
+            rec.x_iban = rec.partner_id.x_iban or ''
 
     @api.onchange('x_comission_rate', 'line_ids')
     def _onchange_x_comission_rate(self):
@@ -120,8 +143,29 @@ class RetrocessionImport(models.Model):
         self.total_commission = total_comm
         self.confirmed = True
 
-    def action_export_pdf(self):
-        return self.env.ref('retrocession_module.action_report_retrocession').report_action(self)
+    
+    
+    def action_open_html(self):
+        if not self.id:
+            raise UserError(_("Veuillez d'abord enregistrer l'import avant d'ouvrir en HTML."))
+        url = f'/odoo/retrocession/report/{self.id}'
+        _logger.info(f"Opening HTML report for ID {self.id} at URL: {url}")
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
+    
+    def action_open_pdf(self):
+        if not self.id:
+            raise UserError(_("Veuillez d'abord enregistrer l'import avant d'ouvrir en HTML."))
+        url = f'/odoo/retrocession/reportpdf/{self.id}'
+        _logger.info(f"Opening PDF report for ID {self.id} at URL: {url}")
+        return {
+            'type': 'ir.actions.act_url',
+            'url': url,
+            'target': 'new',
+        }
 
 
 

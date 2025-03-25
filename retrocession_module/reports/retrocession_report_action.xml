@@ -15,29 +15,18 @@
       </field>
     </record>
 
-    <!-- Bind Server Action to Report -->
-    <record id="action_report_retrocession" model="ir.actions.report">
-      <field name="name">Note de Rétrocession</field>
-      <field name="model">retrocession.import</field>
-      <field name="report_type">qweb-html</field>
-      <field name="report_name">retrocession_module.retrocession_report_template</field>
-      <field name="print_report_name">'Rétrocession - %s' % (object.name)</field>
-      <field name="binding_model_id" ref="model_retrocession_import"/>
-      <field name="binding_type">action</field>
-      <field name="action_id" ref="action_open_retrocession_webpage"/>
-    </record>
-
-    <!-- Custom Paper Format (optional) -->
-    <record id="paperformat_retrocession" model="report.paperformat">
-      <field name="name">Retrocession Report Format</field>
-      <field name="format">A4</field>
-      <field name="orientation">Portrait</field>
-      <field name="margin_top">10</field>
-      <field name="margin_bottom">10</field>
-      <field name="margin_left">10</field>
-      <field name="margin_right">10</field>
-      <field name="header_spacing">5</field>
-      <field name="dpi">90</field>
+    <!-- Server Action to Open PDF -->
+    <record id="action_open_retrocession_pdf" model="ir.actions.server">
+      <field name="name">Open Retrocession Report (Webpage)</field>
+      <field name="model_id" ref="model_retrocession_import"/>
+      <field name="state">code</field>
+      <field name="code">
+        action = {
+            'type': 'ir.actions.act_url',
+            'url': '/retrocession/reportpdf/%s' % (record.id),
+            'target': 'new',
+        }
+      </field>
     </record>
   </data>
 </odoo>

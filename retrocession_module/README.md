@@ -14,17 +14,7 @@
    - Le **fichier Excel**
 3. Cliquez sur **Importer le fichier**
 
-Le fichier doit avoir les colonnes suivantes :
-- `Date`
-- `Machine`
-- `Numéro commande`
-- `Nom Produit`
-- `Prix TTC`
-- `Prix HT`
-
-## 🧾 PDF de rétrocession
-Une fois les lignes importées, cliquez sur **Imprimer > Note de rétrocession**
-
----
-
-Module testé et validé sous Odoo 18 Community.
+## 📦 Mise a jour du dockerfile
+docker build -t odoo-custom .
+docker tag odoo-custom byterrr/odoo-custom:18.0
+docker push byterrr/odoo-custom:18.0

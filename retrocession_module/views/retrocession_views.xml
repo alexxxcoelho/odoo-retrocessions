@@ -42,7 +42,12 @@
                       type="object"
                       class="btn btn-primary"
                       modifiers="{'invisible': [['confirmed', '=', True]]}"/>
-              <button name="action_export_pdf"
+              <button name="action_open_html"
+                    string="Ouvrir en HTML"
+                    type="object"
+                    class="btn btn-secondary"
+                    modifiers="{'invisible': [['id', '=', False]]}"/>
+              <button name="action_open_pdf"
                       string="Exporter PDF"
                       type="object"
                       class="btn btn-secondary"
