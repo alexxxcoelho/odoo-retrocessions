@@ -1,0 +1,128 @@
+<odoo>
+  <!-- v5Existing Retrocession Views -->
+  <record id="view_retrocession_line_list_unique" model="ir.ui.view">
+    <field name="name">retrocession.line.list.unique</field>
+    <field name="model">retrocession.line</field>
+    <field name="type">list</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="date"/>
+        <field name="machine"/>
+        <field name="machine_number"/>
+        <field name="order_number"/>
+        <field name="product_name"/>
+        <field name="price_ttc"/>
+        <field name="price_ht"/>
+        <field name="commission"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_retrocession_import_form" model="ir.ui.view">
+    <field name="name">retrocession.import.form</field>
+    <field name="model">retrocession.import</field>
+    <field name="arch" type="xml">
+      <form string="Import Rétrocessions">
+        <sheet>
+          <group>
+            <field name="name"/>
+            <field name="partner_id" position="after" />
+        	  <field name="x_comission_rate" readonly="1"/>
+            <field name="distributor_id"/>
+            <field name="date_start"/>
+            <field name="date_end"/>
+            <field name="total_ttc"/>
+            <field name="total_ht"/>
+            <field name="total_commission"/>
+            <field name="confirmed" />
+            <field name="import_file" filename="filename"/>
+            <div class="oe_button_box" name="buttons">
+              <button name="action_import_file"
+                      string="Importer le fichier"
+                      type="object"
+                      class="btn btn-primary"
+                      modifiers="{'invisible': [['confirmed', '=', True]]}"/>
+              <button name="action_export_pdf"
+                      string="Exporter PDF"
+                      type="object"
+                      class="btn btn-secondary"
+                      modifiers="{'invisible': [['id', '=', False]]}"/>
+            </div>
+          </group>
+          <field name="line_ids" context="{}" widget="one2many" mode="list"/>
+        </sheet>
+      </form>
+    </field>
+  </record>
+
+  <record id="view_retrocession_import_tree" model="ir.ui.view">
+    <field name="name">retrocession.import.tree</field>
+    <field name="model">retrocession.import</field>
+    <field name="type">list</field>
+    <field name="arch" type="xml">
+      <list>
+        <field name="name"/>
+        <field name="partner_id"/>
+        <field name="distributor_id"/>
+        <field name="date_start"/>
+        <field name="date_end"/>
+        <field name="total_ttc"/>
+        <field name="total_ht"/>
+        <field name="total_commission"/>
+        <field name="confirmed"/>
+      </list>
+    </field>
+  </record>
+
+  <record id="view_retrocession_import_pivot" model="ir.ui.view">
+    <field name="name">retrocession.import.pivot</field>
+    <field name="model">retrocession.import</field>
+    <field name="type">pivot</field>
+    <field name="arch" type="xml">
+      <pivot string="Analyse Rétrocessions">
+        <field name="partner_id" type="row"/>
+        <field name="distributor_id" type="row"/>
+        <field name="date_start" type="col" interval="month"/>
+        <field name="total_ht" type="measure"/>
+        <field name="total_ttc" type="measure"/>
+        <field name="total_commission" type="measure"/>
+      </pivot>
+    </field>
+  </record>
+
+  <!-- Corrected Action Definition -->
+<record id="action_retrocession_import" model="ir.actions.act_window">
+  <field name="name">Import Rétrocessions</field>
+  <field name="res_model">retrocession.import</field>
+  <field name="view_mode">list,form,pivot</field>
+</record>
+
+  <menuitem id="menu_retrocession_root" name="Rétrocessions"/>
+  <menuitem id="menu_retrocession_import" name="Importations" parent="menu_retrocession_root" action="action_retrocession_import"/>
+
+  <!-- Retrocessions Tab in res.partner Form -->
+<record id="view_partner_form_retrocessions" model="ir.ui.view">
+  <field name="name">res.partner.form.retrocessions</field>
+  <field name="model">res.partner</field>
+  <field name="inherit_id" ref="base.view_partner_form"/>
+  <field name="arch" type="xml">
+    <xpath expr="//notebook" position="inside">
+      <page string="Rétrocessions">
+        <group>
+          <field name="import_ids" widget="one2many">
+            <list>
+              <field name="name"/>
+              <field name="date_start"/>
+              <field name="date_end"/>
+              <field name="total_ht"/>
+              <field name="total_ttc"/>
+              <field name="total_commission"/>
+              <field name="confirmed"/>
+            </list>
+          </field>
+        </group>
+      </page>
+    </xpath>
+  </field>
+</record>
+</odoo>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+  <template id="retrocession_report_template" name="Retrocession Report Template">
+    <t t-call="web.basic_layout">
+      <t t-foreach="docs" t-as="doc">
+        <div style="font-family: Helvetica, sans-serif; margin: 10px; color: #000;">
+          <!-- Inline CSS to control borders -->
+          <style>
+            table, td, th {
+              border: none !important;
+            }
+            th {
+              border-bottom: 1px solid #000 !important;
+              border-top: none !important;
+              border-left: none !important;
+              border-right: none !important;
+            }
+          </style>
+
+          <!-- HEADER TABLE -->
+          <table style="width: 100%;">
+            <tr>
+              <td style="vertical-align: top;">
+                <img t-att-src="'https://vape-station.ch/img/VapeStationBlack.png'" alt="Logo" style="max-height: 60px; max-width: 120px; width: auto; height: auto;"/>
+              </td>
+              <td style="text-align: right;">
+                <div style="font-size: 20px; font-weight: 500;">NOTE DE RÉTROCESSION #<t t-esc="doc.id"/></div>
+              </td>
+            </tr>
+          </table>
+
+          <!-- INFO TABLES -->
+          <table style="width: 100%; margin-top: 10px;">
+            <tr>
+              <td style="width: 60%;">
+                <table style="font-size: 12px; width: 100%; padding: 0; border-collapse: collapse;">
+                  <tr>
+                    <td style="padding: 2px 6px;"><strong>Période</strong></td>
+                    <td style="padding: 2px 6px;"><t t-esc="doc.date_start"/> → <t t-esc="doc.date_end"/></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 2px 6px;"><strong>Machine(s)</strong></td>
+                    <td style="padding: 2px 6px;"><t t-esc="', '.join(set([l.machine_number for l in doc.line_ids]))"/></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 2px 6px;"><strong>Commission Totale</strong></td>
+                    <td style="padding: 2px 6px;"><t t-esc="'%.2f' % doc.total_commission"/> CHF</td>
+                  </tr>
+                </table>
+              </td>
+              <td style="width: 40%; font-size: 12px; text-align: right; vertical-align: top;">
+                <t t-esc="doc.partner_id.name"/><br/>
+                <t t-if="doc.partner_id.street" t-esc="doc.partner_id.street"/><br t-if="doc.partner_id.street"/>
+                <t t-if="doc.partner_id.zip" t-esc="doc.partner_id.zip"/>
+                <t t-if="doc.partner_id.city"> <t t-esc="doc.partner_id.city"/></t><br/>
+                <t t-if="doc.partner_id.country_id" t-esc="doc.partner_id.country_id.name"/>
+              </td>
+            </tr>
+          </table>
+
+          <!-- TABLE DES LIGNES -->
+          <table style="width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 20px;">
+            <thead>
+              <tr>
+                <th style="padding: 6px 4px; text-align: left;">Date</th>
+                <th style="padding: 6px 4px; text-align: left;">Machine</th>
+                <th style="padding: 6px 4px; text-align: left;">Commande</th>
+                <th style="padding: 6px 4px; text-align: left;">Produit</th>
+                <th style="padding: 6px 4px; text-align: right;">Prix TTC</th>
+                <th style="padding: 6px 4px; text-align: right;">Prix HT</th>
+                <th style="padding: 6px 4px; text-align: right;">Commission</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr t-foreach="doc.line_ids" t-as="line">
+                <td style="padding: 6px 4px;"><t t-esc="line.date"/></td>
+                <td style="padding: 6px 4px;"><t t-esc="line.machine_number"/></td>
+                <td style="padding: 6px 4px;"><t t-esc="line.order_number"/></td>
+                <td style="padding: 6px 4px;"><t t-esc="line.product_name"/></td>
+                <td style="padding: 6px 4px; text-align: right;"><t t-esc="'%.2f' % line.price_ttc"/></td>
+                <td style="padding: 6px 4px; text-align: right;"><t t-esc="'%.2f' % line.price_ht"/></td>
+                <td style="padding: 6px 4px; text-align: right;"><t t-esc="'%.2f' % line.commission"/></td>
+              </tr>
+              <tr>
+                <td colspan="4" style="text-align: right; font-weight: bold; font-size: 14px; padding: 6px 4px;">Total</td>
+                <td style="padding: 6px 4px; text-align: right;"><t t-esc="'%.2f' % doc.total_ttc"/></td>
+                <td style="padding: 6px 4px; text-align: right;"><t t-esc="'%.2f' % doc.total_ht"/></td>
+                <td style="padding: 6px 4px; text-align: right;"><t t-esc="'%.2f' % doc.total_commission"/></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <!-- FOOTER TABLE -->
+          <table style="width: 100%; margin-top: 30px; font-size: 12px;">
+            <tr>
+              <td style="width: 50%;">
+                <strong>INFORMATIONS DE PAIEMENT</strong><br/>
+                Le montant sera versé sous 5 jours sur le compte :<br/>
+                CH88 0026 5265 1442 1901 W
+              </td>
+              <td style="width: 50%; text-align: right;">
+                Représentant VapeStation<br/>
+                Rue d'Orbe 1<br/>
+                1400 Yverdon<br/>
+                Suisse
+              </td>
+            </tr>
+          </table>
+        </div>
+      </t>
+    </t>
+  </template>
+</odoo>
