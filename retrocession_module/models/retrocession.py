@@ -4,6 +4,9 @@ import pandas as pd
 import base64
 import io
 import logging
+from odoo.exceptions import UserError
+from odoo import _
+
 _logger = logging.getLogger(__name__)
 
 class RetrocessionLine(models.Model):
@@ -74,7 +77,7 @@ class RetrocessionImport(models.Model):
             total_ht = total_ttc = total_comm = 0.0
             for line in rec.line_ids:
                 # recalc commission on each line
-                line.commission = (line.price_ht or 0.0) * x_comission_rate
+                line.commission = (line.price_ht or 0.0) * (rec.x_comission_rate or 0.0)
                 total_ht += line.price_ht or 0.0
                 total_ttc += line.price_ttc or 0.0
                 total_comm += line.commission
@@ -84,6 +87,10 @@ class RetrocessionImport(models.Model):
 
 
     def action_import_file(self):
+        # Si le distributeur n'est pas spécifié mais que le client a un distributeur associé
+        if not self.distributor_id and self.partner_id and self.partner_id.distributor_id:
+            self.distributor_id = self.partner_id.distributor_id
+        
         if not self.partner_id:
             return
 
@@ -181,3 +188,27 @@ class Partner(models.Model):
         string="Rétrocessions", 
         readonly=True
     )
+    
+    # Nouvelles relations
+    distributor_id = fields.Many2one(
+        'res.partner',
+        string="Distributeur associé",
+        domain=[('is_company', '=', True)]
+    )
+    
+    client_ids = fields.One2many(
+        'res.partner',
+        'distributor_id',
+        string="Clients associés"
+    )
+    
+    is_distributor = fields.Boolean(
+        string="Est un distributeur",
+        compute="_compute_is_distributor",
+        store=True
+    )
+    
+    @api.depends('client_ids')
+    def _compute_is_distributor(self):
+        for partner in self:
+            partner.is_distributor = bool(partner.client_ids)
