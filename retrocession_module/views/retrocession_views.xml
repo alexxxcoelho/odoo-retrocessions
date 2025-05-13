@@ -12,7 +12,7 @@
       
       <!-- Ajout d'un onglet pour les distributeurs montrant leurs clients -->
       <xpath expr="//notebook" position="inside">
-        <page string="Clients associés" invisible="len(client_ids) == 0">
+        <page string="Clients associés" invisible="not client_ids">
           <field name="client_ids" readonly="1">
             <list>
               <field name="name"/>
