@@ -5,7 +5,8 @@
     <field name="inherit_id" ref="base.view_partner_form"/>
     <field name="arch" type="xml">
       <!-- Ajout d'un champ pour sélectionner le distributeur pour un client -->
-      <xpath expr="//page[@name='sales_purchases']//group[@name='sales']" position="inside">
+      <!-- Correction : xpath sur le groupe principal si le groupe 'sales' n'existe pas dans la vue parente -->
+      <xpath expr="//sheet/group" position="inside">
         <field name="distributor_id" attrs="{'invisible': [('is_company', '=', False), ('parent_id', '!=', False)]}"/>
       </xpath>
       
