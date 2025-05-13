@@ -52,9 +52,9 @@
         <sheet>
           <group>
             <field name="name"/>
-            <field name="partner_id" domain="[('x_comission_rate', '>', 0)]"/>
+            <field name="partner_id" widget="many2one" options="{'no_create': False, 'no_open': False}"/>
             <field name="x_comission_rate" readonly="1"/>
-            <field name="distributor_id" domain="[('is_distributor', '=', True)]"/>
+            <field name="distributor_id" widget="many2one" options="{'no_create': False, 'no_open': False}"/>
             <field name="date_start"/>
             <field name="date_end"/>
             <field name="total_ttc"/>
