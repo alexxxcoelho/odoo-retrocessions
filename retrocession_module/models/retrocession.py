@@ -181,33 +181,28 @@ class Partner(models.Model):
 
     x_comission_rate = fields.Float(string="Taux de commission (%)")
     x_iban = fields.Char(string="IBAN de reversement")
-    import_ids = fields.One2many('retrocession.import', 'partner_id', string="Rétrocessions")
-    retrocession_ids = fields.One2many(
+    import_ids = fields.One2many(
         'retrocession.import', 
         'partner_id', 
-        string="Rétrocessions", 
-        readonly=True
+        string="Importations de rétrocessions"
     )
-    
+    # Suppression du champ retrocession_ids qui faisait double emploi
     # Nouvelles relations
     distributor_id = fields.Many2one(
         'res.partner',
         string="Distributeur associé",
-        domain=[('is_company', '=', True)]
+        domain="[('is_company', '=', True)]"
     )
-    
     client_ids = fields.One2many(
         'res.partner',
         'distributor_id',
         string="Clients associés"
     )
-    
     is_distributor = fields.Boolean(
         string="Est un distributeur",
         compute="_compute_is_distributor",
         store=True
     )
-    
     @api.depends('client_ids')
     def _compute_is_distributor(self):
         for partner in self:

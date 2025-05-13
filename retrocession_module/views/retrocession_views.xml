@@ -7,12 +7,12 @@
       <!-- Ajout d'un champ pour sélectionner le distributeur pour un client -->
       <!-- Correction : xpath sur le groupe principal si le groupe 'sales' n'existe pas dans la vue parente -->
       <xpath expr="//sheet/group" position="inside">
-        <field name="distributor_id" attrs="{'invisible': [('is_company', '=', False), ('parent_id', '!=', False)]}"/>
+        <field name="distributor_id" invisible="is_company == False and parent_id != False"/>
       </xpath>
       
       <!-- Ajout d'un onglet pour les distributeurs montrant leurs clients -->
       <xpath expr="//notebook" position="inside">
-        <page string="Clients associés" attrs="{'invisible': [('client_ids', '=', [])]}">
+        <page string="Clients associés" invisible="len(client_ids) == 0">
           <field name="client_ids" readonly="1">
             <tree>
               <field name="name"/>
