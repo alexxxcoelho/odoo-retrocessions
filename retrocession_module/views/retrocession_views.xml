@@ -14,12 +14,12 @@
       <xpath expr="//notebook" position="inside">
         <page string="Clients associés" invisible="len(client_ids) == 0">
           <field name="client_ids" readonly="1">
-            <tree>
+            <list>
               <field name="name"/>
               <field name="email"/>
               <field name="phone"/>
               <field name="x_comission_rate"/>
-            </tree>
+            </list>
           </field>
         </page>
       </xpath>
