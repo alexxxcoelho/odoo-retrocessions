@@ -138,7 +138,7 @@
   <field name="inherit_id" ref="base.view_partner_form"/>
   <field name="arch" type="xml">
     <xpath expr="//notebook" position="inside">
-      <page string="Rétrocessions">
+      <page string="Importations de rétrocessions">
         <group>
           <field name="import_ids" widget="one2many">
             <list>
@@ -199,6 +199,21 @@
           </field>
         </page>
       </notebook>
+    </field>
+  </record>
+
+  <!-- Ajout du champ distributeur_id après property_payment_term_id -->
+  <record id="view_partner_form_distributor_field" model="ir.ui.view">
+    <field name="name">res.partner.form.distributor.field</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="arch" type="xml">
+      <xpath expr="//field[@name='property_payment_term_id']" position="after">
+        <field name="distributor_id" 
+               widget="many2one" 
+               options="{'no_create': False, 'no_open': False}"
+               domain="[('id', '!=', id), ('is_company', '=', True)]"/>
+      </xpath>
     </field>
   </record>
 </odoo>
