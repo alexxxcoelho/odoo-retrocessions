@@ -173,7 +173,8 @@
     <field name="model">res.partner</field>
     <field name="inherit_id" ref="base.view_partner_form"/>
     <field name="arch" type="xml">
-      <xpath expr="//page[@name='sales_purchases']//group[@name='sales']" position="inside">
+      <!-- Correction : cibler le groupe principal si le groupe 'sales' n'existe pas -->
+      <xpath expr="//sheet/group" position="inside">
         <field name="distributor_id"
                widget="many2one"
                options="{'no_create': False, 'no_open': False}"
